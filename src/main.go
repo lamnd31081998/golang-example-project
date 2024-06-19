@@ -1,39 +1,31 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 
-	auth "golang-example-project/auth"
+	authModule "golang-example-project/auth"
+	configModule "golang-example-project/config"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	userModule "golang-example-project/user"
 )
 
-var master_db *gorm.DB
-
 func init() {
-	//env
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file err === ", err)
-	}
+	//Load ENV
+	configModule.LoadEnv()
 
-	//master db (postgres)
-	dsn := os.Getenv("MASTER_DB_URL")
-	master_db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Error connect db === ", err)
-	}
+	//Connect DB
+	configModule.ConnectMasterDB()
+
+	//Migrate Table
+	userModule.MigrateTable()
 }
 
 func main() {
-	router := gin.Default()
+	r := gin.Default()
 
-	auth.Init(router)
+	authModule.InitRouter(r)
 
-	router.Run(":" + os.Getenv("PORT"))
+	r.Run(":" + os.Getenv("PORT"))
 }

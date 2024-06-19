@@ -6,8 +6,3 @@ type RegisterDto struct {
 	Password         string `json:"password" validate:"required,min=6"`
 	Confirm_Password string `json:"confirm_password" validate:"required,min=6,eqfield=Password"`
 }
-
-type ValidateError struct {
-	Field string `json:"field"`
-	Type  string `json:"type"`
-}
