@@ -18,5 +18,4 @@ func ConnectMasterDB() {
 	if err != nil {
 		log.Fatalln("ConnectMasterDB Err === ", err)
 	}
-
 }

@@ -5,27 +5,32 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	authModule "golang-example-project/auth"
 	configModule "golang-example-project/config"
-
-	userModule "golang-example-project/user"
+	repositoryModule "golang-example-project/repository"
+	routerModule "golang-example-project/router"
 )
 
 func init() {
 	//Load ENV
 	configModule.LoadEnv()
 
+	//Connect Redis
+	configModule.ConnectRedis()
+
 	//Connect DB
 	configModule.ConnectMasterDB()
 
 	//Migrate Table
-	userModule.MigrateTable()
+	repositoryModule.MigrateUserTable()
 }
 
 func main() {
 	r := gin.Default()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
-	authModule.InitRouter(r)
+	routerModule.InitAuthRouter(r)
+	routerModule.InitUserRouter(r)
 
 	r.Run(":" + os.Getenv("PORT"))
 }
