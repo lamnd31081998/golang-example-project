@@ -71,6 +71,19 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
+	if requestBody.Password != requestBody.Confirm_Password {
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Password and Confirm Password unmatch",
+				"data":    nil,
+			},
+		)
+
+		return
+	}
+
 	var insertData structModule.User
 	copier.Copy(&insertData, &requestBody)
 	insertData.Password = _HashPassword(insertData.Password)
