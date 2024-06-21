@@ -22,6 +22,8 @@ func CheckAuthorization(ctx *gin.Context) {
 				"data":    nil,
 			},
 		)
+
+		return
 	}
 	token = strings.Replace(token, "Bearer ", "", 1)
 
@@ -35,6 +37,8 @@ func CheckAuthorization(ctx *gin.Context) {
 				"data":    nil,
 			},
 		)
+
+		return
 	}
 
 	cache_data, err := sharedModule.GetRedisByKey(token)
@@ -47,6 +51,8 @@ func CheckAuthorization(ctx *gin.Context) {
 				"data":    nil,
 			},
 		)
+
+		return
 	}
 
 	var cache_parsed map[string]interface{}
@@ -61,6 +67,8 @@ func CheckAuthorization(ctx *gin.Context) {
 				"data":    nil,
 			},
 		)
+
+		return
 	}
 
 	user := repositoryModule.FindUserById(uint(cache_parsed["user_id"].(float64)))
@@ -73,8 +81,10 @@ func CheckAuthorization(ctx *gin.Context) {
 				"data":    nil,
 			},
 		)
+
+		return
 	}
-	ctx.Set("tokenInfo", map[string]interface{}{"user_id": user.ID, "user": user})
+	ctx.Set("tokenInfo", map[string]interface{}{"user_id": user.ID, "user": user, "token": token})
 
 	ctx.Next()
 }

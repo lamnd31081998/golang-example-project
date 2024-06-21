@@ -9,7 +9,7 @@ import (
 func GetUserByToken(ctx *gin.Context) {
 	result, exists := ctx.Get("tokenInfo")
 	if !exists {
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -21,7 +21,7 @@ func GetUserByToken(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(
+	ctx.AbortWithStatusJSON(
 		http.StatusOK,
 		gin.H{
 			"status":  http.StatusOK,

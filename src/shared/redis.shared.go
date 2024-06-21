@@ -16,6 +16,13 @@ func GetRedisByKey(key string) (string, error) {
 	return result, nil
 }
 
+func DelRedisByKey(key string) error {
+	if err := configModule.RedisClient.Del(ctx, key).Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func SetRedisByKey(key string, payload any, duration int) error {
 	err := configModule.RedisClient.Set(ctx, key, payload, time.Duration(duration)).Err()
 	if err != nil {

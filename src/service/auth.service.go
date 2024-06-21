@@ -22,7 +22,7 @@ import (
 func Register(ctx *gin.Context) {
 	var requestBody structModule.RegisterDto
 	if err := ctx.BindJSON(&requestBody); err != nil {
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -44,7 +44,7 @@ func Register(ctx *gin.Context) {
 			}
 		})
 
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -59,7 +59,7 @@ func Register(ctx *gin.Context) {
 
 	user := repositoryModule.FindUserByUsername(requestBody.Username)
 	if user != nil {
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -76,7 +76,7 @@ func Register(ctx *gin.Context) {
 	insertData.Password = _HashPassword(insertData.Password)
 	user = repositoryModule.CreateUser(insertData)
 
-	ctx.JSON(
+	ctx.AbortWithStatusJSON(
 		http.StatusCreated,
 		gin.H{
 			"status":  http.StatusCreated,
@@ -89,7 +89,7 @@ func Register(ctx *gin.Context) {
 func Login(ctx *gin.Context) {
 	var requestBody structModule.LoginDto
 	if err := ctx.BindJSON(&requestBody); err != nil {
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -111,7 +111,7 @@ func Login(ctx *gin.Context) {
 			}
 		})
 
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -126,7 +126,7 @@ func Login(ctx *gin.Context) {
 
 	user := repositoryModule.FindUserByUsername(requestBody.Username)
 	if user == nil {
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -139,7 +139,7 @@ func Login(ctx *gin.Context) {
 	}
 
 	if !_CheckHashPassword(requestBody.Password, user.Password) {
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -155,7 +155,7 @@ func Login(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("Create Token Fail === ", err)
 
-		ctx.JSON(
+		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
 				"status":  http.StatusBadRequest,
@@ -169,7 +169,7 @@ func Login(ctx *gin.Context) {
 
 	user = repositoryModule.UpdateUserById(structModule.User{ID: user.ID, LastActive: time.Now()})
 
-	ctx.JSON(
+	ctx.AbortWithStatusJSON(
 		http.StatusOK,
 		gin.H{
 			"status":  http.StatusOK,
@@ -178,6 +178,44 @@ func Login(ctx *gin.Context) {
 				"user":         user,
 				"access_token": token,
 			},
+		},
+	)
+}
+
+func LogoutByToken(ctx *gin.Context) {
+	result, exists := ctx.Get("tokenInfo")
+	if !exists {
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "User not Found",
+				"data":    nil,
+			},
+		)
+
+		return
+	}
+
+	if err := sharedModule.DelRedisByKey(result.(map[string]interface{})["token"].(string)); err != nil {
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Logout Fail",
+				"data":    nil,
+			},
+		)
+
+		return
+	}
+
+	ctx.AbortWithStatusJSON(
+		http.StatusOK,
+		gin.H{
+			"status":  http.StatusOK,
+			"message": "Logout Success",
+			"data":    nil,
 		},
 	)
 }
