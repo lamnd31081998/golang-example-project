@@ -33,7 +33,7 @@ func CreateUser(insertData structModule.User) *structModule.User {
 }
 
 func UpdateUserById(updateData structModule.User) *structModule.User {
-	if err := configModule.MasterDB.Model(&updateData).Omit("ID", "CreatedAt", "UpdatedAt").Updates(updateData).Error; err != nil {
+	if err := configModule.MasterDB.Model(&updateData).Omit("ID", "Username", "CreatedAt", "UpdatedAt").Updates(updateData).Error; err != nil {
 		return nil
 	}
 	return &updateData

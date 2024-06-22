@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -180,8 +179,6 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	user = repositoryModule.UpdateUserById(structModule.User{ID: user.ID, LastActive: time.Now()})
-
 	ctx.AbortWithStatusJSON(
 		http.StatusOK,
 		gin.H{
@@ -196,21 +193,13 @@ func Login(ctx *gin.Context) {
 }
 
 func LogoutByToken(ctx *gin.Context) {
-	result, exists := ctx.Get("tokenInfo")
-	if !exists {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				"status":  http.StatusBadRequest,
-				"message": "User not Found",
-				"data":    nil,
-			},
-		)
+	result, _ := ctx.Get("tokenInfo")
+	result_parsed := result.(structModule.TokenInfo)
+	user_info := result_parsed.User
 
-		return
-	}
+	repositoryModule.UpdateUserById(structModule.User{ID: user_info.ID, Status: 2})
 
-	if err := sharedModule.DelRedisByKey(result.(map[string]interface{})["token"].(string)); err != nil {
+	if err := sharedModule.DelRedisByKey(result_parsed.Token); err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{

@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
 	repositoryModule "golang-example-project/repository"
 	sharedModule "golang-example-project/shared"
+	structModule "golang-example-project/struct"
 )
 
 func CheckAuthorization(ctx *gin.Context) {
@@ -84,7 +86,10 @@ func CheckAuthorization(ctx *gin.Context) {
 
 		return
 	}
-	ctx.Set("tokenInfo", map[string]interface{}{"user_id": user.ID, "user": user, "token": token})
+
+	repositoryModule.UpdateUserById(structModule.User{ID: user.ID, LastActive: time.Now(), Status: 1})
+
+	ctx.Set("tokenInfo", structModule.TokenInfo{Token: token, UserId: user.ID, User: *user})
 
 	ctx.Next()
 }

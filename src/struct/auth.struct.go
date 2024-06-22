@@ -11,3 +11,9 @@ type LoginDto struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required,min=6"`
 }
+
+type TokenInfo struct {
+	Token  string
+	UserId uint
+	User   User
+}
