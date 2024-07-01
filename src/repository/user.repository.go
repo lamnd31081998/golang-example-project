@@ -32,9 +32,10 @@ func CreateUser(insertData structModule.User) *structModule.User {
 	return &insertData
 }
 
-func UpdateUserById(updateData structModule.User) *structModule.User {
-	if err := configModule.MasterDB.Model(&updateData).Omit("ID", "Username", "CreatedAt", "UpdatedAt").Updates(updateData).Error; err != nil {
-		return nil
+func UpdateUserById(updateData map[string]interface{}) error {
+	var user structModule.User
+	if err := configModule.MasterDB.Model(&user).Omit("ID", "Username", "CreatedAt", "UpdatedAt").Where("ID = ?", updateData["ID"]).Updates(updateData).Error; err != nil {
+		return err
 	}
-	return &updateData
+	return nil
 }

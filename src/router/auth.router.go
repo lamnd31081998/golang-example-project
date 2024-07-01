@@ -13,6 +13,5 @@ func InitAuthRouter(route *gin.Engine) {
 		api.POST("/register", serviceModule.Register)
 		api.POST("/login", serviceModule.Login)
 		api.DELETE("/logout", middlewareModule.CheckAuthorization, serviceModule.LogoutByToken)
-
 	}
 }

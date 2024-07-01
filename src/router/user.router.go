@@ -10,6 +10,7 @@ import (
 func InitUserRouter(route *gin.Engine) {
 	api := route.Group("/user")
 	{
-		api.GET("/", middlewareModule.CheckAuthorization, serviceModule.GetUserByToken)
+		api.GET("", middlewareModule.CheckAuthorization, serviceModule.GetUserByToken)
+		api.PUT("", middlewareModule.CheckAuthorization, serviceModule.UpdateUserByToken)
 	}
 }

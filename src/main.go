@@ -37,6 +37,7 @@ func main() {
 		ExposeHeaders:    []string{"*"},
 		AllowCredentials: true,
 	}))
+	r.Static("/assets", "./../public")
 
 	routerModule.InitAuthRouter(r)
 	routerModule.InitUserRouter(r)

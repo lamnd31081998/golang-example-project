@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -165,8 +164,6 @@ func Login(ctx *gin.Context) {
 
 	token, err := sharedModule.JwtCreateToken(user.ID, user.Username)
 	if err != nil {
-		fmt.Println("Create Token Fail === ", err)
-
 		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
@@ -197,7 +194,7 @@ func LogoutByToken(ctx *gin.Context) {
 	result_parsed := result.(structModule.TokenInfo)
 	user_info := result_parsed.User
 
-	repositoryModule.UpdateUserById(structModule.User{ID: user_info.ID, Status: 2})
+	repositoryModule.UpdateUserById(map[string]interface{}{"ID": user_info.ID, "Status": 2})
 
 	if err := sharedModule.DelRedisByKey(result_parsed.Token); err != nil {
 		ctx.AbortWithStatusJSON(

@@ -87,7 +87,7 @@ func CheckAuthorization(ctx *gin.Context) {
 		return
 	}
 
-	repositoryModule.UpdateUserById(structModule.User{ID: user.ID, LastActive: time.Now(), Status: 1})
+	repositoryModule.UpdateUserById(map[string]interface{}{"ID": user.ID, "LastActive": time.Now(), "Status": 1})
 
 	ctx.Set("tokenInfo", structModule.TokenInfo{Token: token, UserId: user.ID, User: *user})
 
